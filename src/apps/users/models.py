@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 import uuid
 
 from django_countries.fields import CountryField
+from phonenumber_field.modelfields import PhoneNumberField
 
 from src.apps.users.enums import UserRole
 
@@ -31,6 +32,7 @@ class UserProfile(models.Model):
         primary_key=True, default=uuid.uuid4, editable=False, unique=True
     )
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    username = models.CharField(unique=True)
     role = models.CharField(choices=UserRole.choices())
     email = models.EmailField(max_length=200)
     first_name = models.CharField(max_length=70, blank=True)
