@@ -10,23 +10,29 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
+from datetime import timedelta
+
+from decouple import Config, RepositoryEnv
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
 
+BASE_DIR = Path(__file__).resolve().parent.parent
+DOTENV_FILE = BASE_DIR / "config/.env"
+env_config = Config(RepositoryEnv(DOTENV_FILE))
 
 # Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
+# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-5#snbh_4p!&_-o7m3s5bi*v^cbv&goyg(pw=*2t2w=ixuar_h!'
+SECRET_KEY = env_config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env_config('DEBUG', cast=bool, default=True)
 
-ALLOWED_HOSTS = []
 
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "0.0.0.0"]
 
 # Application definition
 
@@ -37,6 +43,19 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    # 3rd party
+    "rest_framework",
+    "rest_framework_simplejwt",
+    "corsheaders",
+    "django_filters",
+    "django_countries",
+    "phonenumber_field",
+    
+    # my app (api)
+    "src.apps.users",
+    "src.apps.products",
+    "src.apps.orders",
 ]
 
 MIDDLEWARE = [
@@ -75,11 +94,14 @@ WSGI_APPLICATION = 'src.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': env_config('POSTGRES_NAME'),
+        'USER': env_config('POSTGRES_USER'),
+        'PASSWORD': env_config('POSTGRES_PASSWORD'),
+        'HOST': env_config('POSTGRES_HOST'),
+        'PORT': env_config('POSTGRES_PORT'),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -121,3 +143,20 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+MEDIA_URL = '/images/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'images')
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+REST_FRAMEWORK = {
+     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ],
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+}

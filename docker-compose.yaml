@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app_backend
+    restart: always
+    env_file: ./config/.env
+    volumes:
+      - static:/app/static
+      - media:/app/media
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:14.4
+    container_name: app_postgres
+    env_file: ./config/.env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+
+volumes:
+  postgres_data:
+  static:
+  media:

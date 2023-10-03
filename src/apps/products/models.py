@@ -7,7 +7,6 @@ class ProductCategory(models.Model):
         primary_key=True, default=uuid.uuid4, editable=False, unique=True
     )
     name = models.CharField(max_length=50, unique=True)
-    created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = "Category"
@@ -23,7 +22,6 @@ class ProductInventory(models.Model):
     )
     quantity = models.IntegerField()
     sold = models.IntegerField(default=0)
-    created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = "Inventory"
@@ -48,6 +46,3 @@ class Product(models.Model):
     inventory = models.OneToOneField(
         ProductInventory, on_delete=models.CASCADE, related_name="product"
     )
-
-    created = models.DateTimeField(auto_now_add=True)
-
