@@ -36,16 +36,12 @@ class RegistrationInputSerializer(serializers.Serializer):
     address = UserAddressInputSerializer()
 
 
-class UpdateUserInputSerializer(serializers.Serializer):
-    first_name = serializers.CharField()
-    last_name = serializers.CharField()
-    username = serializers.CharField()
-
-
 class UpdateUserProfileInputSerializer(serializers.Serializer):
-    user = UserUpdateInputSerializer(required=False)
+    first_name = serializers.CharField(required=False)
+    last_name = serializers.CharField(required=False)
+    username = serializers.CharField(required=False)
     phone_number = serializers.CharField(required=False)
-    address = UserAddressInputSerializer(many=True, required=False)
+    address = UserAddressInputSerializer(required=False)
     
     
 class UserOutputSerializer(serializers.ModelSerializer):
@@ -93,7 +89,7 @@ class RegistrationOutputSerializer(serializers.ModelSerializer):
 
 class UserProfileListOutputSerializer(serializers.ModelSerializer):
     user = UserOutputSerializer(many=False, read_only=True)
-    address = UserAddressOutputSerializer(many=True, read_only=True)
+    address = UserAddressOutputSerializer(read_only=True)
 
     class Meta:
         model = UserProfile
