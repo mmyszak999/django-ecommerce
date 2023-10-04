@@ -2,11 +2,12 @@ from rest_framework import serializers
 from django_countries.serializers import CountryFieldMixin
 from django_countries.serializer_fields import CountryField
 from src.apps.users.models import UserAddress, UserProfile
+from src.apps.users.enums import UserRole
 
 
 class UserAddressInputSerializer(serializers.Serializer):
-    address_1 = serializers.CharField()
-    address_2 = serializers.CharField(required=False)
+    primary_address = serializers.CharField()
+    secondary_address = serializers.CharField(required=False)
     country = CountryField()
     state = serializers.CharField(required=False)
     city = serializers.CharField()
@@ -18,6 +19,9 @@ class UserInputSerializer(serializers.Serializer):
     first_name = serializers.CharField()
     last_name = serializers.CharField()
     email = serializers.EmailField()
+    
+
+class UserPasswordsSerializer(serializers.Serializer):
     password = serializers.CharField(
         write_only=True,
         required=True,
@@ -30,11 +34,20 @@ class UserInputSerializer(serializers.Serializer):
     )
 
 
-class RegistrationInputSerializer(serializers.Serializer):
-    user = UserInputSerializer(required=True)
+class UserProfileInputSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    email = serializers.EmailField()
+    role = serializers.ChoiceField(choices=UserRole.choices())
     phone_number = serializers.CharField()
+    
+    
+class RegistrationInputSerializer(serializers.Serializer):
+    user = UserProfileInputSerializer()
+    passwords = UserPasswordsSerializer()
     address = UserAddressInputSerializer()
-
+    
 
 class UpdateUserProfileInputSerializer(serializers.Serializer):
     first_name = serializers.CharField(required=False)
@@ -53,7 +66,7 @@ class UserOutputSerializer(serializers.ModelSerializer):
             "first_name",
             "last_name",
             "email",
-            "phone_number"
+            "role",
         )
         read_only_fields = fields
 
@@ -76,20 +89,22 @@ class UserAddressOutputSerializer(CountryFieldMixin, serializers.ModelSerializer
 class RegistrationOutputSerializer(serializers.ModelSerializer):
 
     user = UserOutputSerializer(many=False, read_only=True)
-    address = UserAddressOutputSerializer(many=False, read_only=True)
+    address = UserAddressOutputSerializer(many=True, read_only=True)
 
     class Meta:
         model = UserProfile
         fields = (
             "user",
             "address",
+            "phone_number",
+            "role"
         )
         read_only_fields = fields
 
 
 class UserProfileListOutputSerializer(serializers.ModelSerializer):
     user = UserOutputSerializer(many=False, read_only=True)
-    address = UserAddressOutputSerializer(read_only=True)
+    address = UserAddressOutputSerializer(many=True, read_only=True)
 
     class Meta:
         model = UserProfile
@@ -98,6 +113,7 @@ class UserProfileListOutputSerializer(serializers.ModelSerializer):
             "user",
             "phone_number",
             "address",
+            'role',
         )
         read_only_fields = fields
 

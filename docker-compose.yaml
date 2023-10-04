@@ -9,6 +9,7 @@ services:
     restart: always
     env_file: ./config/.env
     volumes:
+      - .:/app/
       - static:/app/static
       - media:/app/media
     ports:

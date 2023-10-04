@@ -15,7 +15,7 @@ class UserAddress(models.Model):
     primary_address = models.CharField(max_length=200, blank=True, null=True)
     secondary_address = models.CharField(max_length=200, blank=True, null=True)
     country = CountryField()
-    state = models.CharField(max_length=70, blank=True)
+    state = models.CharField(max_length=70, blank=True, null=True)
     city = models.CharField(max_length=120)
     zip_code = models.CharField(max_length=30)
 
