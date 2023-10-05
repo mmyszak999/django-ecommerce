@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 
 from django_countries.fields import CountryField
 from phonenumber_field.modelfields import PhoneNumberField
@@ -11,8 +12,18 @@ class UserAddressEntity:
     country: CountryField
     city: str
     zip_code: str
-    secondary_address: str = None
-    state: str = None
+    secondary_address: Optional[str] = None
+    state: Optional[str] = None
+
+
+@dataclass(frozen=True)
+class UserAddressUpdateEntity:
+    primary_address: Optional[str]
+    country: Optional[CountryField]
+    city: Optional[str]
+    zip_code: Optional[str]
+    secondary_address: Optional[str]
+    state: Optional[str]
 
 
 @dataclass(frozen=True)
@@ -23,3 +34,11 @@ class UserProfileEntity:
     email: str
     role: str
     phone_number: PhoneNumberField
+
+
+@dataclass(frozen=True)
+class UserProfileUpdateEntity:
+    username: Optional[str]
+    first_name: Optional[str]
+    last_name: Optional[str]
+    phone_number: Optional[PhoneNumberField]
