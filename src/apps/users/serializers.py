@@ -49,7 +49,6 @@ class RegistrationInputSerializer(serializers.Serializer):
     user = UserProfileInputSerializer()
     passwords = UserPasswordsSerializer()
     address = UserAddressInputSerializer()
-    phone_number = PhoneNumberField()
     
 
 class UpdateUserProfileInputSerializer(serializers.Serializer):

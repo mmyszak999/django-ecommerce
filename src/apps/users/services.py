@@ -94,8 +94,7 @@ class UserProfileCreateService:
 
 
 class UserUpdateService:    
-    def user_address_update(self, instance: UserProfile, dto: UserAddressUpdateEntity) -> UserAddress:
-        user_address = instance.address.all()[0]
+    def user_address_update(self, instance: UserAddress, dto: UserAddressUpdateEntity) -> UserAddress:
         instance.primary_address = dto.primary_address
         instance.secondary_address = dto.secondary_address
         instance.country = dto.country
@@ -103,32 +102,28 @@ class UserUpdateService:
         instance.city = dto.city
         instance.zip_code = dto.zip_code
         instance.save()
-        
         return instance
     
     @classmethod
     def _build_user_address_dto_from_request_data(cls, instance: UserAddress, request_data: OrderedDict) -> UserAddressUpdateEntity:
         serializer = UpdateUserAddressInputSerializer(instance, data=request_data, partial=True)
         serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
-        user_address = instance.address.all()[0]
+        data = dict(serializer.validated_data)
 
         return UserAddressUpdateEntity(
-            primary_address=getattr(request_data, "primary_address", user_address.primary_address),
-            secondary_address=getattr(request_data, "secondary_address", user_address.secondary_address),
-            country=getattr(request_data, "country", user_address.country),
-            state=getattr(request_data, "state", user_address.state),
-            city=getattr(request_data, "city", user_address.city),
-            zip_code=getattr(request_data, "zip_code", user_address.zip_code),
-            
+            primary_address=data.get("primary_address", instance.primary_address),
+            secondary_address=data.get("secondary_address", instance.secondary_address),
+            country=data.get("country", instance.country),
+            state=data.get( "state", instance.state),
+            city=data.get( "city", instance.city),
+            zip_code=data.get("zip_code", instance.zip_code)
         )
         
     def user_profile_update(self, dto: UserProfileUpdateEntity, instance: UserProfile) -> UserProfile:
-        user = instance.user
-        user.username = getattr(dto, "username", instance.email)
-        user.first_name = getattr(dto, "first_name", instance.first_name)
-        user.last_name = getattr(dto, "last_name", instance.last_name)
-        instance.phone_number = getattr(dto, "phone_number", instance.phone_number)
+        instance.username = dto.username
+        instance.first_name = dto.first_name
+        instance.last_name = dto.last_name
+        instance.phone_number = dto.phone_number
         instance.save()
         
         return instance
@@ -138,28 +133,30 @@ class UserUpdateService:
     def _build_user_profile_dto_from_request_data(cls, instance: UserProfile, request_data: list) -> UserProfileUpdateEntity:
         serializer = UpdateUserProfileInputSerializer(instance, data=request_data, partial=True)
         serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
-
+        data = dict(serializer.validated_data)
+        
         return UserProfileUpdateEntity(
-            username=getattr(request_data, "username", instance.username),
-            first_name=getattr(request_data, "first_name", instance.first_name),
-            last_name=getattr(request_data, "last_name", instance.last_name),
-            phone_number=getattr(request_data, "phone_number", instance.phone_number)
+            username=data.get("username", instance.username),
+            first_name=data.get("first_name", instance.first_name),
+            last_name=data.get("last_name", instance.last_name),
+            phone_number=data.get("phone_number", instance.phone_number)
         )
     
     @transaction.atomic
     def update_user(self, request_data: OrderedDict, instance: UserProfile) -> UserProfile:
         user_profile_data = request_data.pop("user")
         address_data = request_data.pop("address")
+        address_instance = instance.address.all()[0]
         
         username_check = UserProfile.objects.filter(username=user_profile_data.get("username"))
 
         if username_check:
             raise ValueNotUniqueException(UserProfile, "username", user_profile_data['username'])
         
-        user_address_dto = self._build_user_address_dto_from_request_data(instance, address_data)
+        
+        user_address_dto = self._build_user_address_dto_from_request_data(address_instance, address_data)
         user_profile_dto = self._build_user_profile_dto_from_request_data(instance, user_profile_data)
-        address = self.user_address_update(instance, dto=user_address_dto)
+        address = self.user_address_update(address_instance, dto=user_address_dto)
         return self.user_profile_update(user_profile_dto, instance)
 
 
