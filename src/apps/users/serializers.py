@@ -16,6 +16,15 @@ class UserAddressInputSerializer(serializers.Serializer):
     zip_code = serializers.CharField()
 
 
+class UserProfileInputSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    first_name = serializers.CharField()
+    last_name = serializers.CharField()
+    email = serializers.EmailField()
+    role = serializers.ChoiceField(choices=UserRole.choices())
+    phone_number = PhoneNumberField()
+    
+    
 class UserInputSerializer(serializers.Serializer):
     username = serializers.CharField()
     first_name = serializers.CharField()
@@ -34,15 +43,6 @@ class UserPasswordsSerializer(serializers.Serializer):
         required=True,
         style={"input_type": "password", "placeholder": "Password"},
     )
-
-
-class UserProfileInputSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    first_name = serializers.CharField()
-    last_name = serializers.CharField()
-    email = serializers.EmailField()
-    role = serializers.ChoiceField(choices=UserRole.choices())
-    phone_number = PhoneNumberField()
 
     
 class RegistrationInputSerializer(serializers.Serializer):
@@ -118,7 +118,7 @@ class RegistrationOutputSerializer(serializers.ModelSerializer):
         read_only_fields = fields
 
 
-class UserProfileListOutputSerializer(serializers.ModelSerializer):
+class UserDetailOutputSerializer(serializers.ModelSerializer):
     user = UserOutputSerializer(many=False, read_only=True)
     address = UserAddressOutputSerializer(many=True, read_only=True)
 
@@ -127,9 +127,7 @@ class UserProfileListOutputSerializer(serializers.ModelSerializer):
         fields = (
             "id",
             "user",
-            "phone_number",
-            "address",
-            'role',
+            "address"
         )
         read_only_fields = fields
 

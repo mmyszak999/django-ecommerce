@@ -1,5 +1,14 @@
-from rest_framework import permissions, generics, status
+from uuid import UUID
+
+from rest_framework import permissions, status
+from rest_framework.viewsets import GenericViewSet
+from rest_framework.request import Request
 from rest_framework.response import Response
+from rest_framework.mixins import (
+    ListModelMixin,
+    DestroyModelMixin,
+    RetrieveModelMixin,
+)
 
 from src.apps.users.models import UserAddress, UserProfile
 from src.apps.users.serializers import (
@@ -7,16 +16,16 @@ from src.apps.users.serializers import (
     RegistrationOutputSerializer,
     UserOutputSerializer,
     UpdateUserSerializer,
-    UserProfileListOutputSerializer
+    UserDetailOutputSerializer
 )
 from src.apps.users.services import UserProfileCreateService, UserUpdateService
 
 
-class UserRegisterAPIView(generics.GenericAPIView):
+class UserRegisterAPIView(GenericViewSet):
     serializer_class = RegistrationOutputSerializer
     permission_classes = [permissions.AllowAny]
 
-    def post(self, request):
+    def create(self, request: Request) -> Response:
         service = UserProfileCreateService()
         serializer = RegistrationInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -28,17 +37,17 @@ class UserRegisterAPIView(generics.GenericAPIView):
         )
 
 
-class UserProfileListAPIView(generics.ListAPIView):
-    queryset = UserProfile.objects.all()
-    serializer_class = UserProfileListOutputSerializer
-
-
-class UserProfileDetailAPIView(generics.RetrieveAPIView):
+class UserProfileListAPIView(GenericViewSet, ListModelMixin):
     queryset = UserProfile.objects.all()
     serializer_class = UserOutputSerializer
+
+
+class UserProfileDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyModelMixin):
+    queryset = UserProfile.objects.all()
+    serializer_class = UserDetailOutputSerializer
     service_class = UserUpdateService
 
-    def put(self, request, pk):
+    def update(self, request: Request, pk: UUID) -> Response:
         service = UserUpdateService()
         instance = self.get_object()
         serializer = UpdateUserSerializer(data=request.data)
@@ -49,3 +58,7 @@ class UserProfileDetailAPIView(generics.RetrieveAPIView):
         return Response(
             self.get_serializer(updated_userprofile).data, status=status.HTTP_200_OK
         )
+    
+    def delete(self, request: Request, pk: UUID) -> Response:
+        self.destroy(request, pk)
+        return Response(status=status.HTTP_204_NO_CONTENT)

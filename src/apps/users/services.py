@@ -11,7 +11,7 @@ from src.apps.users.serializers import (UserAddressInputSerializer, UserProfileI
 
 from src.apps.users.validators import validate_passwords
 from src.core.exceptions import ValueNotUniqueException
-from src.entities.users_entities import UserAddressEntity, UserProfileEntity, UserAddressUpdateEntity, UserProfileUpdateEntity
+from src.apps.users.entities.users_entities import UserAddressEntity, UserProfileEntity, UserAddressUpdateEntity, UserProfileUpdateEntity
 
 
 User = get_user_model()

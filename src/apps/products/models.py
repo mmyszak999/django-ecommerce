@@ -1,5 +1,8 @@
-from django.db import models
 import uuid
+
+from django.db import models
+
+from src.apps.products.utils import resize_thumbnail
 
 
 class ProductCategory(models.Model):
@@ -46,3 +49,9 @@ class Product(models.Model):
     inventory = models.OneToOneField(
         ProductInventory, on_delete=models.CASCADE, related_name="product"
     )
+    product_image = models.ImageField()
+    product_thumbnail = models.ImageField()
+    
+    def save(self):
+        super().save()
+        resize_thumbnail(self.product_image, self.product_thumbnail)

@@ -9,11 +9,11 @@ from src.apps.users.views import (
 app_name = "users"
 
 urlpatterns = [
-    path("register/", UserRegisterAPIView.as_view(), name="register"),
-    path("", UserProfileListAPIView.as_view(), name="user-profile-list"),
+    path("register/", UserRegisterAPIView.as_view({'post': 'create'}), name="register"),
+    path("", UserProfileListAPIView.as_view({'get': 'list'}), name="user-profile-list"),
     path(
         "<uuid:pk>/",
-        UserProfileDetailAPIView.as_view(),
+        UserProfileDetailAPIView.as_view({'put': 'update', "delete": "destroy", 'get': 'retrieve'}),
         name="user-profile-detail",
     )
 ]
