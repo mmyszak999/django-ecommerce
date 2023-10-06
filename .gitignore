@@ -8,7 +8,7 @@
 db.sqlite3
 
 # Media directories
-/images/__sized__
+/images/**
 /images/images
 /.idea/.gitignore
 /.idea/.*xml

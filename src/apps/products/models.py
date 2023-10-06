@@ -2,7 +2,7 @@ import uuid
 
 from django.db import models
 
-from src.apps.products.utils import resize_thumbnail
+from src.apps.products.utils import make_thumbnail
 
 
 class ProductCategory(models.Model):
@@ -52,6 +52,9 @@ class Product(models.Model):
     product_image = models.ImageField()
     product_thumbnail = models.ImageField()
     
-    def save(self):
-        super().save()
-        resize_thumbnail(self.product_image, self.product_thumbnail)
+    def save(self, *args, **kwargs):
+        if not make_thumbnail(self):
+            # set to a default thumbnail
+            raise Exception('Could not create thumbnail - is the file type valid?')
+
+        super(Product, self).save(*args, **kwargs)

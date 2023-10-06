@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from decimal import Optional
+from typing import Optional
 
 
 @dataclass(frozen=True)

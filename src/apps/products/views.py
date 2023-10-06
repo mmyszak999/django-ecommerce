@@ -18,6 +18,8 @@ from src.apps.products.serializers import (
     ProductOutputSerializer,
     ProductDetailOutputSerializer
 )
+from src.apps.products.services.product_category_service import ProductCategoryCreateService, ProductCategoryUpdateService
+from src.apps.products.services.product_service import ProductCreateService, ProductUpdateService
 
 
 class ProductCategoryListCreateAPIView(GenericViewSet, ListModelMixin):
@@ -25,16 +27,31 @@ class ProductCategoryListCreateAPIView(GenericViewSet, ListModelMixin):
     serializer_class = ProductCategoryOutputSerializer
     
     def create(self, request: Request) -> Response:
-        pass
+        service = ProductCategoryCreateService()
+        serializer = ProductCategoryInputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        category = service.create_category(request_data=serializer.validated_data)
+        return Response(
+            self.get_serializer(category).data,
+            status=status.HTTP_201_CREATED
+        )
 
 
 class ProductCategoryDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyModelMixin):
     queryset = ProductCategory.objects.all()
     serializer_class = ProductCategoryOutputSerializer
-    service_class = None
 
     def update(self, request: Request, pk: UUID) -> Response:
-        pass
+        service = ProductCategoryUpdateService()
+        instance = self.get_object()
+        serializer = ProductCategoryInputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        updated_category = service.update_category(
+            request_data=serializer.validated_data, instance=instance
+        )
+        return Response(
+            self.get_serializer(updated_category).data, status=status.HTTP_200_OK
+        )
     
     def delete(self, request: Request, pk: UUID) -> Response:
         self.destroy(request, pk)
@@ -46,13 +63,19 @@ class ProductListCreateAPIView(GenericViewSet, ListModelMixin):
     serializer_class = ProductOutputSerializer
     
     def create(self, request: Request) -> Response:
-        pass
+        service = ProductCreateService()
+        serializer = ProductInputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        product = service.product_create(request_data=serializer.validated_data)
+        return Response(
+            self.get_serializer(product).data,
+            status=status.HTTP_201_CREATED
+        )
 
 
 class ProductDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyModelMixin):
     queryset = Product.objects.all()
     serializer_class = ProductDetailOutputSerializer
-    service_class = None
 
     def update(self, request: Request, pk: UUID) -> Response:
         pass

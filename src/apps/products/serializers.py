@@ -29,14 +29,21 @@ class ProductInputSerializer(serializers.Serializer):
     name = serializers.CharField()
     price = serializers.FloatField(default=0, allow_null=True)
     description = serializers.CharField(required=False)
-    category = ProductCategoryInputSerializer(many=False)
+    product_image = serializers.ImageField()
+    category_id = serializers.UUIDField()
     inventory = ProductInventoryInputSerializer(many=False, required=True)
+    
+
+class ProductDataInputSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    price = serializers.FloatField(default=0, allow_null=True)
+    description = serializers.CharField(required=False)
     product_image = serializers.ImageField()
 
 
 class ProductOutputSerializer(serializers.ModelSerializer):
-    category_name = serializers.CharField(source="category__name")
-    quantity = serializers.CharField(source="inventory__quantity")
+    category = serializers.CharField(source="name")
+    
     class Meta:
         model = Product
         fields = (
@@ -44,15 +51,16 @@ class ProductOutputSerializer(serializers.ModelSerializer):
             "name",
             "price",
             "description",
-            "category_name",
-            "quantity",
+            "category",
             "product_image",
+            "product_thumbnail",
         )
         read_only_fields = fields
 
 class ProductDetailOutputSerializer(serializers.ModelSerializer):
     inventory = ProductInventoryOutputSerializer(many=False, read_only=True)
     category = ProductCategoryOutputSerializer(many=False, read_only=True)
+    
     class Meta:
         model = Product
         fields = (
@@ -61,6 +69,7 @@ class ProductDetailOutputSerializer(serializers.ModelSerializer):
             "description",
             "price",
             "product_image",
+            "product_thumbnail",
             "inventory",
             "category",
         )

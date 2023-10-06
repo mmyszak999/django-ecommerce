@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from decimal import Decimal
 from io import BytesIO
+from typing import Optional
 
 
 @dataclass(frozen=True)

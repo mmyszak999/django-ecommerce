@@ -45,7 +45,6 @@ class UserProfileListAPIView(GenericViewSet, ListModelMixin):
 class UserProfileDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyModelMixin):
     queryset = UserProfile.objects.all()
     serializer_class = UserDetailOutputSerializer
-    service_class = UserUpdateService
 
     def update(self, request: Request, pk: UUID) -> Response:
         service = UserUpdateService()
