@@ -59,7 +59,7 @@ class ProductUpdateInputSerializer(serializers.Serializer):
     
 
 class ProductOutputSerializer(serializers.ModelSerializer):
-    category_name = serializers.CharField(source="category")
+    category_name = serializers.CharField(source="category", read_only=True)
     
     class Meta:
         model = Product

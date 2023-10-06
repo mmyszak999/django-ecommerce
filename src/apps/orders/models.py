@@ -1,8 +1,11 @@
-from django.db import models
 import uuid
+
+from django.db import models
+from django.utils import timezone
 
 from src.apps.users.models import UserProfile, UserAddress
 from src.apps.products.models import Product
+from src.apps.orders.utils import payment_deadline_calc
 
 
 class Cart(models.Model):
@@ -13,6 +16,11 @@ class Cart(models.Model):
 
     def __str__(self) -> str:
         return f"Cart {self.pk} | user {self.user.username}. Total: ${self.total}"
+    
+    @property
+    def total(self):
+        cartitems = self.cart_items.all()
+        return sum(item.total_item_price for item in cartitems)
 
 
 class CartItem(models.Model):
@@ -26,6 +34,10 @@ class CartItem(models.Model):
     def __str__(self) -> str:
         return f"Item of cart number {self.cart.pk}. Quantity: {self.quantity}"
     
+    @property
+    def total_item_price(self) -> float:
+        return round(self.quantity * self.product.price, 2)
+    
     
 class Order(models.Model):
     id = models.UUIDField(
@@ -36,7 +48,14 @@ class Order(models.Model):
         UserAddress, on_delete=models.SET_NULL, null=True, blank=True
     )
     order_accepted = models.BooleanField(default=False)
-    payment_accepted = models.BooleanField(default=False)
+    order_place_date = models.DateTimeField(auto_now_add=True)
+    payment_deadline = models.DateTimeField(default=payment_deadline_calc)
+    
+    @property
+    def total(self):
+        orderitems = self.order_items.all()
+        return sum(item.product.price for item in orderitems)
+
 
 
 class OrderItem(models.Model):
@@ -48,3 +67,7 @@ class OrderItem(models.Model):
     )
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
+    
+    @property
+    def total_item_price(self) -> float:
+        return self.quantity * self.product.price
