@@ -44,25 +44,22 @@ class ProductDataInputSerializer(serializers.Serializer):
 class ProductUpdateDataInputSerializer(serializers.Serializer):
     name = serializers.CharField(required=False)
     price = serializers.FloatField(required=False)
-    description = serializers.CharField(required=False, allow_null=True)
+    description = serializers.CharField(required=False)
     product_image = serializers.ImageField(required=False)
 
 
 class ProductInventoryUpdateInputSerializer(serializers.Serializer):
-    quantity = serializers.IntegerField(initial=0, allow_null=True, required=False)
+    quantity = serializers.IntegerField(initial=0, required=False)
 
 
 class ProductUpdateInputSerializer(serializers.Serializer):
-    name = serializers.CharField(required=False)
-    price = serializers.FloatField(required=False)
-    description = serializers.CharField(required=False, allow_null=True)
-    product_image = serializers.ImageField(required=False)
+    product = ProductUpdateDataInputSerializer()
     category_id = serializers.UUIDField(required=False)
-    inventory = ProductInventoryUpdateInputSerializer(many=False, required=False)
+    inventory = ProductInventoryUpdateInputSerializer()
     
 
 class ProductOutputSerializer(serializers.ModelSerializer):
-    category = serializers.CharField(source="name")
+    category_name = serializers.CharField(source="category")
     
     class Meta:
         model = Product
@@ -72,6 +69,7 @@ class ProductOutputSerializer(serializers.ModelSerializer):
             "price",
             "description",
             "category",
+            "category_name",
             "product_image",
             "product_thumbnail",
         )
