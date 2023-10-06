@@ -16,7 +16,9 @@ from src.apps.products.serializers import (
     ProductCategoryOutputSerializer,
     ProductInputSerializer,
     ProductOutputSerializer,
-    ProductDetailOutputSerializer
+    ProductDetailOutputSerializer,
+    ProductUpdateInputSerializer,
+    ProductUpdateDataInputSerializer
 )
 from src.apps.products.services.product_category_service import ProductCategoryCreateService, ProductCategoryUpdateService
 from src.apps.products.services.product_service import ProductCreateService, ProductUpdateService
@@ -78,7 +80,16 @@ class ProductDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyModelMixin
     serializer_class = ProductDetailOutputSerializer
 
     def update(self, request: Request, pk: UUID) -> Response:
-        pass
+        service = ProductUpdateService()
+        instance = self.get_object()
+        serializer = ProductUpdateInputSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        updated_product = service.product_update(
+            request_data=serializer.validated_data, instance=instance
+        )
+        return Response(
+            self.get_serializer(updated_product).data, status=status.HTTP_200_OK
+        )
     
     def delete(self, request: Request, pk: UUID) -> Response:
         self.destroy(request, pk)

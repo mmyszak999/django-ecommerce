@@ -53,8 +53,6 @@ class Product(models.Model):
     product_thumbnail = models.ImageField()
     
     def save(self, *args, **kwargs):
-        if not make_thumbnail(self):
-            # set to a default thumbnail
-            raise Exception('Could not create thumbnail - is the file type valid?')
+        make_thumbnail(self)
 
         super(Product, self).save(*args, **kwargs)

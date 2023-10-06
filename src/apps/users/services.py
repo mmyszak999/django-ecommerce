@@ -59,7 +59,7 @@ class UserProfileCreateService:
         return user_profile
 
     @classmethod
-    def _build_user_profile_dto_from_request_data(cls, request_data: list) -> UserProfileEntity:
+    def _build_user_profile_dto_from_request_data(cls, request_data: OrderedDict) -> UserProfileEntity:
         serializer = UserProfileInputSerializer(data=request_data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
@@ -130,7 +130,8 @@ class UserUpdateService:
         
 
     @classmethod
-    def _build_user_profile_dto_from_request_data(cls, instance: UserProfile, request_data: list) -> UserProfileUpdateEntity:
+    def _build_user_profile_dto_from_request_data(cls, instance: UserProfile, request_data: OrderedDict) -> UserProfileUpdateEntity:
+        print(request_data, "uss")
         serializer = UpdateUserProfileInputSerializer(instance, data=request_data, partial=True)
         serializer.is_valid(raise_exception=True)
         data = dict(serializer.validated_data)
@@ -144,6 +145,7 @@ class UserUpdateService:
     
     @transaction.atomic
     def update_user(self, request_data: OrderedDict, instance: UserProfile) -> UserProfile:
+        print(request_data)
         user_profile_data = request_data.pop("user")
         address_data = request_data.pop("address")
         address_instance = instance.address.all()[0]

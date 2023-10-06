@@ -8,6 +8,7 @@ from rest_framework.mixins import (
     ListModelMixin,
     DestroyModelMixin,
     RetrieveModelMixin,
+    CreateModelMixin
 )
 
 from src.apps.users.models import UserAddress, UserProfile
@@ -21,7 +22,7 @@ from src.apps.users.serializers import (
 from src.apps.users.services import UserProfileCreateService, UserUpdateService
 
 
-class UserRegisterAPIView(GenericViewSet):
+class UserRegisterAPIView(GenericViewSet, CreateModelMixin):
     serializer_class = RegistrationOutputSerializer
     permission_classes = [permissions.AllowAny]
 
