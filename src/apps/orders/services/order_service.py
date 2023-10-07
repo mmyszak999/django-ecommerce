@@ -4,6 +4,7 @@ from uuid import UUID
 from django.db import transaction
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
+from django.core.mail import send_mail
 
 from src.apps.users.models import UserAddress, UserProfile
 from src.apps.products.models import Product
@@ -39,6 +40,19 @@ class OrderCreateService:
                 product_inventory.quantity -= quantity
                 product_inventory.save()
     
+    @classmethod
+    def _send_confirmation_email(cls, order_id: int, email: str):
+        send_mail(
+            "Confirmation of order #{}".format(order_id),
+            """
+            Thank you for purchasing in our store.
+            We want to inform you that your order is confirmed.
+            """,
+            "dontreply@djangoecommerce.com",
+            ["{}".format(email)],
+            fail_silently=False,
+        )
+    
     @transaction.atomic
     def create_order(cls, cart_id: int, user: User, data: OrderedDict) -> Order:
         cart = get_object_or_404(Cart, id=cart_id)
@@ -54,6 +68,8 @@ class OrderCreateService:
         cls._create_order_items(instance=order, cart_items=cart_items)
         order.accepted = True
         order.save()
+        cart.delete()
+        cls._send_confirmation_email(order_id=order.id, email=order.user.email)
 
         return order
     
