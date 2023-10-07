@@ -31,9 +31,9 @@ class CartItem(models.Model):
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True
     )
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="cart_items")
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name="cart_items")
 
     def __str__(self) -> str:
         return f"Item of cart number {self.cart.pk}. Quantity: {self.quantity}"
@@ -65,11 +65,11 @@ class OrderItem(models.Model):
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True
     )
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.IntegerField(default=1)
     order = models.ForeignKey(
         Order, on_delete=models.CASCADE, related_name="order_items"
     )
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.IntegerField(default=1)
     
     @property
     def total_item_price(self) -> float:

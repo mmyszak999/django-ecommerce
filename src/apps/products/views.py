@@ -9,6 +9,7 @@ from rest_framework.mixins import (
     DestroyModelMixin,
     RetrieveModelMixin,
 )
+from django_filters import rest_framework as filters
 
 from src.apps.products.models import ProductCategory, Product
 from src.apps.products.serializers import (
@@ -22,6 +23,7 @@ from src.apps.products.serializers import (
 )
 from src.apps.products.services.product_category_service import ProductCategoryCreateService, ProductCategoryUpdateService
 from src.apps.products.services.product_service import ProductCreateService, ProductUpdateService
+from src.apps.products.filters import ProductFilter
 
 
 class ProductCategoryListCreateAPIView(GenericViewSet, ListModelMixin):
@@ -63,6 +65,8 @@ class ProductCategoryDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyMo
 class ProductListCreateAPIView(GenericViewSet, ListModelMixin):
     queryset = Product.objects.all()
     serializer_class = ProductOutputSerializer
+    filter_backends = [filters.DjangoFilterBackend]
+    filterset_class = ProductFilter
     
     def create(self, request: Request) -> Response:
         service = ProductCreateService()

@@ -10,6 +10,7 @@ from rest_framework.mixins import (
     RetrieveModelMixin,
 )
 from django.shortcuts import get_object_or_404
+from django_filters import rest_framework as filters
 
 from src.apps.orders.models import Cart, CartItem, Order, OrderItem
 from src.apps.orders.serializers import (
@@ -24,6 +25,8 @@ from src.apps.orders.serializers import (
 )
 from src.apps.orders.services.order_service import OrderCreateService, OrderUpdateService, OrderDestroyService
 from src.apps.orders.services.cart_service import CartCreateService, CartItemCreateService, CartItemUpdateService
+from src.apps.orders.filters import OrderFilter
+
 
 
 class CartListCreateAPIView(GenericViewSet, ListModelMixin):
@@ -109,6 +112,8 @@ class OrderCreateAPIView(GenericViewSet):
 class OrderListAPIView(GenericViewSet, ListModelMixin):
     queryset = Order.objects.all()
     serializer_class = OrderOutputSerializer
+    filter_backends = [filters.DjangoFilterBackend]
+    filterset_class = OrderFilter
 
 
 class OrderDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyModelMixin):
