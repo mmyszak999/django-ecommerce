@@ -2,10 +2,14 @@ import uuid
 
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth import get_user_model
 
 from src.apps.users.models import UserProfile, UserAddress
 from src.apps.products.models import Product
 from src.apps.orders.utils import payment_deadline_calc
+
+
+User = get_user_model()
 
 
 class Cart(models.Model):

@@ -84,7 +84,6 @@ class ProductDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyModelMixin
         instance = self.get_object()
         serializer = ProductUpdateInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        print(serializer.data, "ww")
         updated_product = service.product_update(
             request_data=serializer.validated_data, instance=instance
         )

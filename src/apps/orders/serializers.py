@@ -2,15 +2,24 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from rest_framework import serializers
 
 from src.apps.orders.models import Cart, CartItem, Order, OrderItem
-
-
-class CartItemInputSerializer(serializers.Serializer):
-    product_id = serializers.CharField()
-    quantity = serializers.IntegerField(default=1, validators=[MinValueValidator(1)])
+from src.apps.users.serializers import UserAddressOutputSerializer, UserOrderOutputSerializer
 
 
 class CartItemQuantityInputSerializer(serializers.Serializer):
     quantity = serializers.IntegerField(default=1, validators=[MinValueValidator(0)])
+
+
+class CartItemQuantityUpdateSerializer(serializers.Serializer):
+    quantity = serializers.IntegerField(default=1, validators=[MinValueValidator(0)], required=False)
+    
+
+class CartItemInputSerializer(serializers.Serializer):
+    product_id = serializers.CharField()
+    quantity = CartItemQuantityInputSerializer()
+
+
+class CartItemUpdateSerializer(serializers.Serializer):
+    quantity = CartItemQuantityUpdateSerializer()
     
     
 class CartItemOutputSerializer(serializers.ModelSerializer):

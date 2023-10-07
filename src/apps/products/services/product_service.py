@@ -1,5 +1,4 @@
 from typing import Any, OrderedDict
-from copy import deepcopy
 from uuid import UUID
 
 from django.db import transaction
@@ -52,6 +51,7 @@ class ProductCreateService:
 
         return ProductEntity(*data.values())
     
+    @transaction.atomic
     def product_create(self, request_data: OrderedDict) -> Product:
         inventory_data = request_data['inventory']
         inventory_dto = self._build_product_inventory_dto_from_request_data(inventory_data)

@@ -14,5 +14,13 @@ class IncorrectPasswordsException(ServiceException):
 
 class ValueNotUniqueException(ServiceException):
     def __init__(self, model: Model, field: str, value: Any) -> None:
-        super().__init__(f"Value {value} of {field} for model {model.__name__} is not unique!"
+        super().__init__(f"Value {value} of {field} for model {model.__name__} is not unique! "
             "Please change the value!")
+
+
+class MaxQuantityExceededException(ServiceException):
+    def __init__(self, inventory_quantity: int, typed_quantity: int) -> None:
+        super().__init__(
+            f"Typed product quantity - {typed_quantity}, exceeds the inventory quantity - {inventory_quantity}! "
+            "Please change the quantity value and check if the product is not out of stock!"
+            )
