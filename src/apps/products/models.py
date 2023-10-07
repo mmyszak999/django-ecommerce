@@ -24,7 +24,6 @@ class ProductInventory(models.Model):
         primary_key=True, default=uuid.uuid4, editable=False, unique=True
     )
     quantity = models.IntegerField()
-    sold = models.IntegerField(default=0)
 
     class Meta:
         verbose_name = "Inventory"

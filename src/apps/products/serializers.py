@@ -21,7 +21,7 @@ class ProductInventoryInputSerializer(serializers.Serializer):
 class ProductInventoryOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = ProductInventory
-        fields = ("id", "quantity", "sold")
+        fields = ("id", "quantity")
         read_only_fields = fields
 
 

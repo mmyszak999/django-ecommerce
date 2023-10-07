@@ -54,7 +54,11 @@ class CartOutputSerializer(serializers.ModelSerializer):
 
 
 class OrderInputSerializer(serializers.Serializer):
-    pass
+    address_id = serializers.CharField()
+
+
+class OrderUpdateSerializer(serializers.Serializer):
+    address_id = serializers.CharField(required=False)
 
 
 class OrderItemOutputSerializer(serializers.ModelSerializer):

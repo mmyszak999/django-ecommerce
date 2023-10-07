@@ -21,6 +21,7 @@ class ValueNotUniqueException(ServiceException):
 class MaxQuantityExceededException(ServiceException):
     def __init__(self, inventory_quantity: int, typed_quantity: int) -> None:
         super().__init__(
-            f"Typed product quantity - {typed_quantity}, exceeds the inventory quantity - {inventory_quantity}! "
+            f"Typed product quantity - {typed_quantity}, "
+            f"exceeds the biggest possible amount you can add to your cart - {inventory_quantity}! "
             "Please change the quantity value and check if the product is not out of stock!"
             )

@@ -58,8 +58,7 @@ class Order(models.Model):
     @property
     def total(self):
         orderitems = self.order_items.all()
-        return sum(item.product.price for item in orderitems)
-
+        return sum(item.total_item_price for item in orderitems)
 
 
 class OrderItem(models.Model):

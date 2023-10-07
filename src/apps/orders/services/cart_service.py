@@ -13,8 +13,6 @@ from src.apps.orders.serializers import (
     CartItemOutputSerializer,
     CartItemInputSerializer,
     CartItemQuantityInputSerializer,
-    OrderOutputSerializer,
-    OrderInputSerializer,
     CartItemUpdateSerializer,
     CartItemQuantityUpdateSerializer
 )
@@ -29,7 +27,7 @@ from src.apps.orders.validators import validate_item_quantity
 
 class CartCreateService:
     def create_cart(self, username: str):
-        user = UserProfile.objects.get(user=username)
+        user = UserProfile.objects.get(username=username)
         return Cart.objects.create(user=user)
     
 
@@ -58,19 +56,20 @@ class CartItemCreateService:
         
         try:
             cartitem = CartItem.objects.get(product_id=product_id, cart_id=cart_id)
-
-            validate_item_quantity(quantity['quantity'], product.inventory.quantity - cartitem.quantity)
+            max_quantity = product.inventory.quantity - cartitem.quantity
+            
+            validate_item_quantity(quantity['quantity'], max_quantity)
             cartitem.quantity += quantity['quantity']
             cartitem.save()
             
         except CartItem.DoesNotExist:
-            max_quantity = product.inventory.quantity - quantity['quantity']
-            validate_item_quantity(quantity['quantity'], max_quantity)
+            validate_item_quantity(quantity['quantity'], product.inventory.quantity)
             
             cart = get_object_or_404(Cart, id=cart_id)
             cart_item_dto = self._build_cart_item_dto_from_request_data(quantity)
             cartitem = self._cart_item_create(cart_item_dto, product, cart)
             cartitem.save()
+            print("ww")
             
         return cartitem
 
