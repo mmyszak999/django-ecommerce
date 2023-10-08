@@ -26,14 +26,23 @@ from src.apps.orders.serializers import (
     OrderUpdateSerializer,
     MostOrderedProductsOutputSerializer,
 )
-from src.apps.orders.services.order_service import OrderCreateService, OrderUpdateService, OrderDestroyService
+from src.apps.orders.services.order_service import OrderCreateService
 from src.apps.orders.services.cart_service import CartCreateService, CartItemCreateService, CartItemUpdateService
 from src.apps.orders.filters import OrderFilter, MostOrderedProductsFilter
+from src.core.permissions import CartOwnerOrAdmin, CustomerOrAdmin, NonCustomer
 
 
 class CartListCreateAPIView(GenericViewSet, ListModelMixin):
     queryset = Cart.objects.all()
     serializer_class = CartOutputSerializer
+    permission_classes = [CustomerOrAdmin]
+    
+    def get_queryset(self):
+        qs = self.queryset
+        user = self.request.user
+        if user.is_superuser:
+            return qs
+        return qs.filter(user__user=user)
 
     def create(self, request, *args, **kwargs):
         username = request.user.username
@@ -48,11 +57,28 @@ class CartListCreateAPIView(GenericViewSet, ListModelMixin):
 class CartDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyModelMixin):
     queryset = Cart.objects.all()
     serializer_class = CartOutputSerializer
+    permission_classes = [CustomerOrAdmin]
+    
+    def get_queryset(self):
+        qs = self.queryset
+        user = self.request.user
+        if user.is_superuser:
+            return qs
+        return qs.filter(user__user=user)
 
 
 class CartItemsListCreateAPIView(GenericViewSet, ListModelMixin):
     queryset = CartItem.objects.all()
     serializer_class = CartItemOutputSerializer
+    permission_classes = [CartOwnerOrAdmin, CustomerOrAdmin]
+    
+    def get_queryset(self):
+        cart_pk = self.kwargs.get("pk")
+        qs = self.queryset
+        user = self.request.user
+        if user.is_superuser:
+            return qs
+        return qs.filter(cart_id=cart_pk, cart__user__user=user)
 
     def create(self, request: Response, pk: UUID):
         cart_id = self.kwargs.get("pk")
@@ -71,6 +97,7 @@ class CartItemsListCreateAPIView(GenericViewSet, ListModelMixin):
 class CartItemsDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyModelMixin):
     queryset = CartItem.objects.all()
     serializer_class = CartItemOutputSerializer
+    permission_classes = [CartOwnerOrAdmin, CustomerOrAdmin]
 
     def get_object(self):
         id = self.kwargs.get("cart_item_pk")
@@ -94,6 +121,7 @@ class CartItemsDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyModelMix
 class OrderCreateAPIView(GenericViewSet):
     queryset = Order.objects.all()
     serializer_class = OrderOutputSerializer
+    permission_classes = [CustomerOrAdmin]
 
     def create(self, request: Request, pk: UUID) -> Response:
         service = OrderCreateService()
@@ -116,11 +144,27 @@ class OrderListAPIView(GenericViewSet, ListModelMixin):
     serializer_class = OrderOutputSerializer
     filter_backends = [filters.DjangoFilterBackend]
     filterset_class = OrderFilter
+    permission_classes = [CustomerOrAdmin]
+    
+    def get_queryset(self):
+        qs = self.queryset
+        user = self.request.user
+        if user.is_superuser:
+            return qs
+        return qs.filter(user__user=user)
 
 
 class OrderDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyModelMixin):
     queryset = Order.objects.all()
     serializer_class = OrderOutputSerializer
+    permission_classes = [CustomerOrAdmin]
+    
+    def get_queryset(self):
+        qs = self.queryset
+        user = self.request.user
+        if user.is_superuser:
+            return qs
+        return qs.filter(user__user=user)
 
     def update(self, request: Request, pk: UUID) -> Response:
         service = OrderUpdateService()
@@ -140,21 +184,11 @@ class OrderDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyModelMixin):
             status=status.HTTP_200_OK,
         )
 
-    def destroy(self, request: Request, pk: UUID):
-        instance = self.get_object()
-        service = OrderDestroyService()
-        if instance.order_accepted:
-            return Response(
-                {"order_accepted": "Order already accepted and cant be deleted"},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-        service.destroy_order(instance)
-        return Response(status=status.HTTP_204_NO_CONTENT)
-    
     
 class MostOrderedProductsListAPIView(GenericViewSet, ListModelMixin):
     queryset = OrderItem.objects.all()
     serializer_class = MostOrderedProductsOutputSerializer
+    permission_classes = [NonCustomer]
     
     def get_queryset(self):
         return OrderItem.objects.select_related('product', 'order').values(

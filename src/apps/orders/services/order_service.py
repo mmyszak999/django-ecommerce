@@ -63,7 +63,8 @@ class OrderCreateService:
         address_id = data["address_id"]
         address = get_object_or_404(UserAddress, id=address_id)
         user_profile = UserProfile.objects.get(username=user.username)
-
+        if cart.user.user != user:
+            raise PermissionError("You are not the order owner!")
         order = Order.objects.create(user=user_profile, address=address)
         cls._create_order_items(instance=order, cart_items=cart_items)
         order.accepted = True
@@ -72,26 +73,4 @@ class OrderCreateService:
         cls._send_confirmation_email(order_id=order.id, email=order.user.email)
 
         return order
-    
-
-class OrderUpdateService:
-    @transaction.atomic
-    def update_order(self, instance: Order, user: User, data: OrderedDict) -> Order:
-        address_id = data.get("address_id", instance.address.id)
-        instance.address = get_object_or_404(UserAddress, id=address_id)
-        instance.save()
-        return instance
-
-
-class OrderDestroyService:
-    @transaction.atomic
-    def destroy_order(self, instance: Order) -> None:
-        order_items = instance.order_items.select_related(
-            "product", "product__inventory"
-        ).all()
-        for orderitem in order_items:
-            product_inventory = orderitem.product.inventory
-            product_inventory.quantity += orderitem.quantity
-            product_inventory.save()
-        instance.delete()
     

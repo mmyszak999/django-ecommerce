@@ -24,11 +24,13 @@ from src.apps.products.serializers import (
 from src.apps.products.services.product_category_service import ProductCategoryCreateService, ProductCategoryUpdateService
 from src.apps.products.services.product_service import ProductCreateService, ProductUpdateService
 from src.apps.products.filters import ProductFilter
+from src.core.permissions import StaffOrReadOnly, SellerOrAdmin
 
 
 class ProductCategoryListCreateAPIView(GenericViewSet, ListModelMixin):
     queryset = ProductCategory.objects.all()
     serializer_class = ProductCategoryOutputSerializer
+    permission_classes = [StaffOrReadOnly]
     
     def create(self, request: Request) -> Response:
         service = ProductCategoryCreateService()
@@ -44,6 +46,7 @@ class ProductCategoryListCreateAPIView(GenericViewSet, ListModelMixin):
 class ProductCategoryDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyModelMixin):
     queryset = ProductCategory.objects.all()
     serializer_class = ProductCategoryOutputSerializer
+    permission_classes = [SellerOrAdmin]
 
     def update(self, request: Request, pk: UUID) -> Response:
         service = ProductCategoryUpdateService()
@@ -67,6 +70,7 @@ class ProductListCreateAPIView(GenericViewSet, ListModelMixin):
     serializer_class = ProductOutputSerializer
     filter_backends = [filters.DjangoFilterBackend]
     filterset_class = ProductFilter
+    permission_classes = [SellerOrAdmin]
     
     def create(self, request: Request) -> Response:
         service = ProductCreateService()
@@ -82,6 +86,7 @@ class ProductListCreateAPIView(GenericViewSet, ListModelMixin):
 class ProductDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyModelMixin):
     queryset = Product.objects.all()
     serializer_class = ProductDetailOutputSerializer
+    permission_classes = [SellerOrAdmin]
 
     def update(self, request: Request, pk: UUID) -> Response:
         service = ProductUpdateService()

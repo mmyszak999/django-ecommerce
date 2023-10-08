@@ -28,6 +28,6 @@ urlpatterns = [
     path("carts/<uuid:pk>/order/", OrderCreateAPIView.as_view({'post': 'create'}), name="create-order"),
     path("orders/", OrderListAPIView.as_view({'get': 'list'}), name="order-list"),
     path("orders/<uuid:pk>/", OrderDetailAPIView.as_view(
-        {'put': 'update', "delete": "destroy", 'get': 'retrieve'}), name="order-detail"),
+        {'get': 'retrieve'}), name="order-detail"),
     path("most-ordered-products/", MostOrderedProductsListAPIView.as_view({'get': 'list'}), name="most-ordered-proudcts-list"),
 ]
