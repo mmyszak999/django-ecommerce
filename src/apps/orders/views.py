@@ -57,7 +57,7 @@ class CartListCreateAPIView(GenericViewSet, ListModelMixin):
 class CartDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyModelMixin):
     queryset = Cart.objects.all()
     serializer_class = CartOutputSerializer
-    permission_classes = [CustomerOrAdmin]
+    permission_classes = [permissions.IsAuthenticated ,CustomerOrAdmin]
     
     def get_queryset(self):
         qs = self.queryset
@@ -70,7 +70,7 @@ class CartDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyModelMixin):
 class CartItemsListCreateAPIView(GenericViewSet, ListModelMixin):
     queryset = CartItem.objects.all()
     serializer_class = CartItemOutputSerializer
-    permission_classes = [CartOwnerOrAdmin, CustomerOrAdmin]
+    permission_classes = [permissions.IsAuthenticated, CartOwnerOrAdmin, CustomerOrAdmin]
     
     def get_queryset(self):
         cart_pk = self.kwargs.get("pk")
@@ -97,7 +97,7 @@ class CartItemsListCreateAPIView(GenericViewSet, ListModelMixin):
 class CartItemsDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyModelMixin):
     queryset = CartItem.objects.all()
     serializer_class = CartItemOutputSerializer
-    permission_classes = [CartOwnerOrAdmin, CustomerOrAdmin]
+    permission_classes = [permissions.IsAuthenticated, CartOwnerOrAdmin, CustomerOrAdmin]
 
     def get_object(self):
         id = self.kwargs.get("cart_item_pk")
@@ -144,7 +144,7 @@ class OrderListAPIView(GenericViewSet, ListModelMixin):
     serializer_class = OrderOutputSerializer
     filter_backends = [filters.DjangoFilterBackend]
     filterset_class = OrderFilter
-    permission_classes = [CustomerOrAdmin]
+    permission_classes = [permissions.IsAuthenticated, CustomerOrAdmin]
     
     def get_queryset(self):
         qs = self.queryset
@@ -157,7 +157,7 @@ class OrderListAPIView(GenericViewSet, ListModelMixin):
 class OrderDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyModelMixin):
     queryset = Order.objects.all()
     serializer_class = OrderOutputSerializer
-    permission_classes = [CustomerOrAdmin]
+    permission_classes = [permissions.IsAuthenticated, CustomerOrAdmin]
     
     def get_queryset(self):
         qs = self.queryset
