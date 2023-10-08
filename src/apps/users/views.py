@@ -6,7 +6,6 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.mixins import (
     ListModelMixin,
-    DestroyModelMixin,
     RetrieveModelMixin,
     CreateModelMixin
 )
@@ -41,11 +40,25 @@ class UserRegisterAPIView(GenericViewSet, CreateModelMixin):
 class UserProfileListAPIView(GenericViewSet, ListModelMixin):
     queryset = UserProfile.objects.all()
     serializer_class = UserOutputSerializer
+    
+    def get_queryset(self):
+        qs = self.queryset
+        user = self.request.user
+        if user.is_superuser:
+            return qs
+        return qs.filter(user=user)
 
 
-class UserProfileDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyModelMixin):
+class UserProfileDetailAPIView(GenericViewSet, RetrieveModelMixin):
     queryset = UserProfile.objects.all()
     serializer_class = UserDetailOutputSerializer
+    
+    def get_queryset(self):
+        qs = self.queryset
+        user = self.request.user
+        if user.is_superuser:
+            return qs
+        return qs.filter(user=user)
 
     def update(self, request: Request, pk: UUID) -> Response:
         service = UserUpdateService()
@@ -59,6 +72,3 @@ class UserProfileDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyModelM
             self.get_serializer(updated_userprofile).data, status=status.HTTP_200_OK
         )
     
-    def delete(self, request: Request, pk: UUID) -> Response:
-        self.destroy(request, pk)
-        return Response(status=status.HTTP_204_NO_CONTENT)

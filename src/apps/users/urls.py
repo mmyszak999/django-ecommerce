@@ -13,7 +13,7 @@ urlpatterns = [
     path("", UserProfileListAPIView.as_view({'get': 'list'}), name="user-profile-list"),
     path(
         "<uuid:pk>/",
-        UserProfileDetailAPIView.as_view({'put': 'update', "delete": "destroy", 'get': 'retrieve'}),
+        UserProfileDetailAPIView.as_view({'put': 'update', 'get': 'retrieve'}),
         name="user-profile-detail",
     )
 ]
