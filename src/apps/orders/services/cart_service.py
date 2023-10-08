@@ -69,7 +69,6 @@ class CartItemCreateService:
             cart_item_dto = self._build_cart_item_dto_from_request_data(quantity)
             cartitem = self._cart_item_create(cart_item_dto, product, cart)
             cartitem.save()
-            print("ww")
             
         return cartitem
 
