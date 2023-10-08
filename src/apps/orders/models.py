@@ -71,6 +71,10 @@ class OrderItem(models.Model):
         Order, on_delete=models.CASCADE, related_name="order_items"
     )
     
+    def __str__(self) -> str:
+        return f"Order item ({self.product.name}) number {self.order.pk}. Quantity: {self.quantity}"
+    
+    
     @property
     def total_item_price(self) -> float:
         return self.quantity * self.product.price

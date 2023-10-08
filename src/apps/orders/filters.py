@@ -1,7 +1,7 @@
 from django import forms
 from django.db import models
 from django_filters import rest_framework as filters
-from src.apps.orders.models import Order
+from src.apps.orders.models import Order, OrderItem
 
 
 class OrderFilter(filters.FilterSet):
@@ -34,4 +34,22 @@ class OrderFilter(filters.FilterSet):
         fields = [
             "order_place_date",
             "payment_deadline"
+        ]
+
+
+class MostOrderedProductsFilter(filters.FilterSet):
+    order__order_place_date = filters.LookupChoiceFilter(
+        field_class=forms.DateTimeField,
+        lookup_choices=[
+            ("gt", "Greater than"),
+            ("lt", "Less than")
+        ],
+        label='order_place_date'
+    )
+
+
+    class Meta:
+        model = OrderItem
+        fields = [
+            "order__order_place_date",
         ]

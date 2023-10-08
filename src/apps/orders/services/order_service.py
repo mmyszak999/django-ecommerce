@@ -78,7 +78,6 @@ class OrderUpdateService:
     @transaction.atomic
     def update_order(self, instance: Order, user: User, data: OrderedDict) -> Order:
         address_id = data.get("address_id", instance.address.id)
-        print(address_id, "ww")
         instance.address = get_object_or_404(UserAddress, id=address_id)
         instance.save()
         return instance

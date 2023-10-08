@@ -11,6 +11,8 @@ from rest_framework.mixins import (
 )
 from django.shortcuts import get_object_or_404
 from django_filters import rest_framework as filters
+from django.db.models import Sum, Count, F
+from django.utils import timezone
 
 from src.apps.orders.models import Cart, CartItem, Order, OrderItem
 from src.apps.orders.serializers import (
@@ -21,12 +23,12 @@ from src.apps.orders.serializers import (
     OrderOutputSerializer,
     OrderInputSerializer,
     CartItemUpdateSerializer,
-    OrderUpdateSerializer
+    OrderUpdateSerializer,
+    MostOrderedProductsOutputSerializer,
 )
 from src.apps.orders.services.order_service import OrderCreateService, OrderUpdateService, OrderDestroyService
 from src.apps.orders.services.cart_service import CartCreateService, CartItemCreateService, CartItemUpdateService
-from src.apps.orders.filters import OrderFilter
-
+from src.apps.orders.filters import OrderFilter, MostOrderedProductsFilter
 
 
 class CartListCreateAPIView(GenericViewSet, ListModelMixin):
@@ -148,3 +150,33 @@ class OrderDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyModelMixin):
             )
         service.destroy_order(instance)
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    
+class MostOrderedProductsListAPIView(GenericViewSet, ListModelMixin):
+    queryset = OrderItem.objects.all()
+    serializer_class = MostOrderedProductsOutputSerializer
+    
+    def get_queryset(self):
+        return OrderItem.objects.select_related('product', 'order').values(
+            'product__name', 'product__id', "order__order_place_date"
+            ).annotate(
+                order_count=Count('product'), total_quantity=Sum('quantity'),
+                product_name=F('product__name'), product_id=F('product__id')
+                ).order_by('-order_count')
+    
+    def list(self, request: Request, *args, **kwargs):
+        max_products = self.request.query_params.get('max_products', len(self.get_queryset()))
+        date_from = self.request.query_params.get('date_from', timezone.now() - timezone.timedelta(days=30))
+        date_to = self.request.query_params.get('date_to', timezone.now())
+        filtered_queryset = self.get_queryset(
+            ).filter(order__order_place_date__lte=str(date_to),
+                     order__order_place_date__gt=str(date_from))
+
+        page = self.paginate_queryset(filtered_queryset[:int(max_products)])
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = self.get_serializer(queryset[:int(max_products)], many=True)
+        return Response(serializer.data)
+        

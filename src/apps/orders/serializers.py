@@ -99,4 +99,10 @@ class OrderOutputSerializer(serializers.ModelSerializer):
         )
         read_only_fields = fields
 
+
+class MostOrderedProductsOutputSerializer(serializers.Serializer):
+    product_id = serializers.UUIDField()
+    product_name = serializers.CharField()
+    order_count = serializers.IntegerField()
+    total_quantity = serializers.IntegerField()
     

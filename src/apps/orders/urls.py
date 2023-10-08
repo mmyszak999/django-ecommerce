@@ -7,6 +7,7 @@ from src.apps.orders.views import (
     OrderCreateAPIView,
     OrderDetailAPIView,
     OrderListAPIView,
+    MostOrderedProductsListAPIView
 )
 
 app_name = "orders"
@@ -28,4 +29,5 @@ urlpatterns = [
     path("orders/", OrderListAPIView.as_view({'get': 'list'}), name="order-list"),
     path("orders/<uuid:pk>/", OrderDetailAPIView.as_view(
         {'put': 'update', "delete": "destroy", 'get': 'retrieve'}), name="order-detail"),
+    path("most-ordered-products/", MostOrderedProductsListAPIView.as_view({'get': 'list'}), name="most-ordered-proudcts-list"),
 ]
