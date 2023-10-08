@@ -1,5 +1,5 @@
 # django-ecommerce
-* Simple API created in Django and Django Rest Framework for creating order and 
+* Simple API created in Django and Django Rest Framework for creating orders and accessing products
 
 
 ## Tech stack
@@ -14,7 +14,7 @@
 * User registration with creating user profiles with address and 2 tiers available (customer or seller).
 * As a customer you can add products to the cart and update their quantity and create orders.
 * As a seller you are able to add and modify products.
-* You can browse and filter products and categories without being registered.
+* You can browse + filter products and categories without being registered.
 
 
 ## Project setup
