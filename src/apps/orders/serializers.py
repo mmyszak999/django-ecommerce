@@ -2,7 +2,10 @@ from django.core.validators import MaxValueValidator, MinValueValidator
 from rest_framework import serializers
 
 from src.apps.orders.models import Cart, CartItem, Order, OrderItem
-from src.apps.users.serializers import UserAddressOutputSerializer, UserOrderOutputSerializer
+from src.apps.users.serializers import (
+    UserAddressOutputSerializer,
+    UserOrderOutputSerializer,
+)
 
 
 class CartItemQuantityInputSerializer(serializers.Serializer):
@@ -10,8 +13,10 @@ class CartItemQuantityInputSerializer(serializers.Serializer):
 
 
 class CartItemQuantityUpdateSerializer(serializers.Serializer):
-    quantity = serializers.IntegerField(default=1, validators=[MinValueValidator(0)], required=False)
-    
+    quantity = serializers.IntegerField(
+        default=1, validators=[MinValueValidator(0)], required=False
+    )
+
 
 class CartItemInputSerializer(serializers.Serializer):
     product_id = serializers.CharField()
@@ -20,21 +25,15 @@ class CartItemInputSerializer(serializers.Serializer):
 
 class CartItemUpdateSerializer(serializers.Serializer):
     quantity = CartItemQuantityUpdateSerializer()
-    
-    
+
+
 class CartItemOutputSerializer(serializers.ModelSerializer):
     product_id = serializers.CharField(source="product.id", read_only=True)
     product_name = serializers.CharField(source="product.name", read_only=True)
 
     class Meta:
         model = CartItem
-        fields = (
-            "id",
-            "product_id",
-            "product_name",
-            "quantity",
-            "total_item_price"
-        )
+        fields = ("id", "product_id", "product_name", "quantity", "total_item_price")
         read_only_fields = fields
 
 
@@ -67,13 +66,7 @@ class OrderItemOutputSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CartItem
-        fields = (
-            "id",
-            "product_id",
-            "product_name",
-            "quantity",
-            "total_item_price"
-        )
+        fields = ("id", "product_id", "product_name", "quantity", "total_item_price")
         read_only_fields = fields
 
 
@@ -95,7 +88,7 @@ class OrderOutputSerializer(serializers.ModelSerializer):
             "order_accepted",
             "order_items",
             "order_place_date",
-            "payment_deadline"
+            "payment_deadline",
         )
         read_only_fields = fields
 
@@ -105,4 +98,3 @@ class MostOrderedProductsOutputSerializer(serializers.Serializer):
     product_name = serializers.CharField()
     order_count = serializers.IntegerField()
     total_quantity = serializers.IntegerField()
-    

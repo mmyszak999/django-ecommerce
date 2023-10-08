@@ -33,7 +33,7 @@ class TestProductCategoryViews(APITestCase):
         cls.customer_profile = UserProfile.objects.create(
             user=cls.customer,
             username=cls.customer.username,
-            role='customer',
+            role="customer",
             email="customer@mail.com",
             phone_number="+48123123123",
         )
@@ -41,7 +41,7 @@ class TestProductCategoryViews(APITestCase):
         cls.seller_profile = UserProfile.objects.create(
             user=cls.seller,
             username=cls.seller.username,
-            role='seller',
+            role="seller",
             email="seller@mail.com",
             phone_number="+48456456456",
         )
@@ -67,8 +67,8 @@ class TestProductCategoryViews(APITestCase):
     def test_user_can_retrieve_product_category_by_id(self):
         response = self.client.get(self.product_category_detail_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(uuid.UUID(response.json()['id']), self.product_category.id)
-        
+        self.assertEqual(uuid.UUID(response.json()["id"]), self.product_category.id)
+
     def test_user_cannot_delete_product_category(self):
         response = self.client.delete(self.product_category_detail_url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -119,7 +119,7 @@ class TestProductViews(APITestCase):
         cls.customer_profile = UserProfile.objects.create(
             user=cls.customer,
             username=cls.customer.username,
-            role='customer',
+            role="customer",
             email="customer@mail.com",
             phone_number="+48123123123",
         )
@@ -127,7 +127,7 @@ class TestProductViews(APITestCase):
         cls.seller_profile = UserProfile.objects.create(
             user=cls.seller,
             username=cls.seller.username,
-            role='seller',
+            role="seller",
             email="seller@mail.com",
             phone_number="+48456456456",
         )
@@ -142,7 +142,7 @@ class TestProductViews(APITestCase):
             description="waterr",
             category=cls.product_category,
             inventory=cls.product_inventory,
-            product_image=cls.image
+            product_image=cls.image,
         )
 
         cls.product_list_url = reverse("products:product-list")
@@ -157,7 +157,7 @@ class TestProductViews(APITestCase):
         response = self.client.get(self.product_list_url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["count"], 1)
-        
+
         product_data = response.data["results"][0]
         self.assertEqual(product_data["name"], self.product.name)
         self.assertEqual(product_data["price"], self.product.price)
@@ -169,12 +169,12 @@ class TestProductViews(APITestCase):
     def test_customer_cannot_create_product(self):
         response = self.client.post(self.product_list_url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        
+
     def test_customer_cannot_delete_product(self):
         response = self.client.delete(self.product_detail_url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertTrue(Product.objects.exists())
-    
+
     def test_seller_can_delete_product(self):
         self.client.force_login(user=self.seller)
         response = self.client.delete(self.product_detail_url)

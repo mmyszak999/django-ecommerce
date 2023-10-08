@@ -31,15 +31,15 @@ class TestCartViews(APITestCase):
         cls.customer1_profile = UserProfile.objects.create(
             user=cls.customer1,
             username=cls.customer1.username,
-            role='customer',
+            role="customer",
             email="customer1@mail.com",
             phone_number="+48123123123",
         )
-        
+
         cls.customer2_profile = UserProfile.objects.create(
             user=cls.customer2,
             username=cls.customer2.username,
-            role='customer',
+            role="customer",
             email="customer2@mail.com",
             phone_number="+48123123678",
         )
@@ -47,7 +47,7 @@ class TestCartViews(APITestCase):
         cls.seller_profile = UserProfile.objects.create(
             user=cls.seller,
             username=cls.seller.username,
-            role='seller',
+            role="seller",
             email="seller@mail.com",
             phone_number="+48456456456",
         )
@@ -63,7 +63,7 @@ class TestCartViews(APITestCase):
             description="waterr",
             category=cls.product_category,
             inventory=cls.product_inventory,
-            product_image=cls.image
+            product_image=cls.image,
         )
         cls.cart = Cart.objects.create(user=cls.customer1_profile)
         cls.cart_item = CartItem.objects.create(
@@ -81,7 +81,7 @@ class TestCartViews(APITestCase):
 
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(uuid.UUID(response.data["results"][0]["id"]), self.cart.id)
-    
+
     def test_seller_cannot_retrieve_cart(self):
         self.client.force_login(user=self.seller)
         response = self.client.get(self.cart_list_url)
@@ -142,15 +142,15 @@ class TestCartItemViews(APITestCase):
         cls.customer1_profile = UserProfile.objects.create(
             user=cls.customer1,
             username=cls.customer1.username,
-            role='customer',
+            role="customer",
             email="customer1@mail.com",
             phone_number="+48123123123",
         )
-        
+
         cls.customer2_profile = UserProfile.objects.create(
             user=cls.customer2,
             username=cls.customer2.username,
-            role='customer',
+            role="customer",
             email="customer2@mail.com",
             phone_number="+48123123678",
         )
@@ -158,7 +158,7 @@ class TestCartItemViews(APITestCase):
         cls.seller_profile = UserProfile.objects.create(
             user=cls.seller,
             username=cls.seller.username,
-            role='seller',
+            role="seller",
             email="seller@mail.com",
             phone_number="+48456456456",
         )
@@ -174,13 +174,13 @@ class TestCartItemViews(APITestCase):
             description="waterr",
             category=cls.product_category,
             inventory=cls.product_inventory,
-            product_image=cls.image
+            product_image=cls.image,
         )
         cls.cart = Cart.objects.create(user=cls.customer1_profile)
         cls.cart_item = CartItem.objects.create(
             cart=cls.cart, product=cls.product, quantity=10
         )
-        
+
         cls.cart_item_list_url = reverse(
             "orders:cart-item-list", kwargs={"pk": cls.cart.id}
         )
@@ -221,7 +221,9 @@ class TestCartItemViews(APITestCase):
     def test_user_can_delete_cart_item(self):
         response = self.client.delete(self.cart_item_detail_url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(CartItem.objects.filter(cart__user=self.customer1_profile).exists())
+        self.assertFalse(
+            CartItem.objects.filter(cart__user=self.customer1_profile).exists()
+        )
 
     def test_user_cannot_retrieve_cart_item_with_wrong_cart_id(self):
         response = self.client.get(self.wrong_cart_correct_cart_item_detail_url)
@@ -230,7 +232,7 @@ class TestCartItemViews(APITestCase):
     def test_user_cannot_retrieve_cart_item_belonging_to_other_users_cart(self):
         response = self.client.get(self.correct_cart_wrong_cart_item_detail_url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-        
+
     def test_seller_cannot_retrieve_other_users_cart_item(self):
         self.client.force_login(user=self.seller)
         response = self.client.get(self.cart_item_list_url)
@@ -250,7 +252,9 @@ class TestCartItemViews(APITestCase):
         self.client.force_login(user=self.customer2)
         response = self.client.delete(self.cart_item_detail_url)
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertTrue(CartItem.objects.filter(cart__user=self.customer1_profile).exists())
+        self.assertTrue(
+            CartItem.objects.filter(cart__user=self.customer1_profile).exists()
+        )
 
     def test_anonymous_user_cannot_retrieve_cart_item(self):
         self.client.logout()
@@ -285,15 +289,15 @@ class TestOrderViews(APITestCase):
         cls.customer1_profile = UserProfile.objects.create(
             user=cls.customer1,
             username=cls.customer1.username,
-            role='customer',
+            role="customer",
             email="customer1@mail.com",
             phone_number="+48123123123",
         )
-        
+
         cls.customer2_profile = UserProfile.objects.create(
             user=cls.customer2,
             username=cls.customer2.username,
-            role='customer',
+            role="customer",
             email="customer2@mail.com",
             phone_number="+48123123678",
         )
@@ -301,7 +305,7 @@ class TestOrderViews(APITestCase):
         cls.seller_profile = UserProfile.objects.create(
             user=cls.seller,
             username=cls.seller.username,
-            role='seller',
+            role="seller",
             email="seller@mail.com",
             phone_number="+48456456456",
         )
@@ -317,13 +321,13 @@ class TestOrderViews(APITestCase):
             description="waterr",
             category=cls.product_category,
             inventory=cls.product_inventory,
-            product_image=cls.image
+            product_image=cls.image,
         )
         cls.cart = Cart.objects.create(user=cls.customer1_profile)
         cls.cart_item = CartItem.objects.create(
             cart=cls.cart, product=cls.product, quantity=10
         )
-        
+
         cls.order = Order.objects.create(user=cls.customer1_profile)
         cls.order_item = OrderItem.objects.create(
             order=cls.order, product=cls.product, quantity=10
@@ -343,7 +347,7 @@ class TestOrderViews(APITestCase):
 
         self.assertEqual(response.data["count"], 1)
         self.assertEqual(uuid.UUID(response.data["results"][0]["id"]), self.order.id)
-    
+
     def test_seller_cannot_retrieve_order(self):
         self.client.force_login(user=self.seller)
         response = self.client.get(self.order_list_url)

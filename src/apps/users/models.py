@@ -39,7 +39,7 @@ class UserProfile(models.Model):
     last_name = models.CharField(max_length=100, blank=True)
     phone_number = PhoneNumberField()
     address = models.ManyToManyField(UserAddress, related_name="userprofile")
-    
+
     class Meta:
         verbose_name = "User Profile"
         verbose_name_plural = "User Profiles"

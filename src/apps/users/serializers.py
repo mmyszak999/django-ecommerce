@@ -23,14 +23,14 @@ class UserProfileInputSerializer(serializers.Serializer):
     email = serializers.EmailField()
     role = serializers.ChoiceField(choices=UserRole.choices())
     phone_number = PhoneNumberField()
-    
-    
+
+
 class UserInputSerializer(serializers.Serializer):
     username = serializers.CharField()
     first_name = serializers.CharField()
     last_name = serializers.CharField()
     email = serializers.EmailField()
-    
+
 
 class UserPasswordsSerializer(serializers.Serializer):
     password = serializers.CharField(
@@ -44,19 +44,19 @@ class UserPasswordsSerializer(serializers.Serializer):
         style={"input_type": "password", "placeholder": "Password"},
     )
 
-    
+
 class RegistrationInputSerializer(serializers.Serializer):
     user = UserProfileInputSerializer()
     passwords = UserPasswordsSerializer()
     address = UserAddressInputSerializer()
-    
+
 
 class UpdateUserProfileInputSerializer(serializers.Serializer):
     first_name = serializers.CharField(required=False)
     last_name = serializers.CharField(required=False)
     username = serializers.CharField(required=False)
     phone_number = PhoneNumberField(required=False)
-    
+
 
 class UpdateUserAddressInputSerializer(serializers.Serializer):
     primary_address = serializers.CharField(required=False)
@@ -70,8 +70,8 @@ class UpdateUserAddressInputSerializer(serializers.Serializer):
 class UpdateUserSerializer(serializers.Serializer):
     user = UpdateUserProfileInputSerializer()
     address = UpdateUserAddressInputSerializer()
-    
-    
+
+
 class UserOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
@@ -82,7 +82,7 @@ class UserOutputSerializer(serializers.ModelSerializer):
             "last_name",
             "email",
             "role",
-            "phone_number"
+            "phone_number",
         )
         read_only_fields = fields
 
@@ -103,18 +103,12 @@ class UserAddressOutputSerializer(CountryFieldMixin, serializers.ModelSerializer
 
 
 class RegistrationOutputSerializer(serializers.ModelSerializer):
-
     user = UserOutputSerializer(many=False, read_only=True)
     address = UserAddressOutputSerializer(many=True, read_only=True)
 
     class Meta:
         model = UserProfile
-        fields = (
-            "user",
-            "address",
-            "phone_number",
-            "role"
-        )
+        fields = ("user", "address", "phone_number", "role")
         read_only_fields = fields
 
 
@@ -124,12 +118,9 @@ class UserDetailOutputSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = (
-            "id",
-            "user",
-            "address"
-        )
+        fields = ("id", "user", "address")
         read_only_fields = fields
+
 
 class UserOrderOutputSerializer(serializers.ModelSerializer):
     user = UserOutputSerializer(many=False, read_only=True)

@@ -32,7 +32,7 @@ class ProductInputSerializer(serializers.Serializer):
     product_image = serializers.ImageField(required=False)
     category_id = serializers.UUIDField()
     inventory = ProductInventoryInputSerializer(many=False, required=True)
-    
+
 
 class ProductDataInputSerializer(serializers.Serializer):
     name = serializers.CharField()
@@ -56,11 +56,11 @@ class ProductUpdateInputSerializer(serializers.Serializer):
     product = ProductUpdateDataInputSerializer()
     category_id = serializers.UUIDField(required=False)
     inventory = ProductInventoryUpdateInputSerializer()
-    
+
 
 class ProductOutputSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source="category", read_only=True)
-    
+
     class Meta:
         model = Product
         fields = (
@@ -79,7 +79,7 @@ class ProductOutputSerializer(serializers.ModelSerializer):
 class ProductDetailOutputSerializer(serializers.ModelSerializer):
     inventory = ProductInventoryOutputSerializer(many=False, read_only=True)
     category = ProductCategoryOutputSerializer(many=False, read_only=True)
-    
+
     class Meta:
         model = Product
         fields = (

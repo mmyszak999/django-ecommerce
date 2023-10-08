@@ -7,10 +7,8 @@ from src.apps.products.models import Product, ProductCategory
 
 class ProductFilter(filters.FilterSet):
     name = filters.LookupChoiceFilter(
-        field_class=forms.CharField,
-        lookup_choices=[
-            ("exact", "Equals")
-        ])
+        field_class=forms.CharField, lookup_choices=[("exact", "Equals")]
+    )
     category = filters.ModelMultipleChoiceFilter(
         queryset=ProductCategory.objects.all(),
         field_name="category__name",
@@ -29,20 +27,19 @@ class ProductFilter(filters.FilterSet):
         lookup_choices=[
             ("exact", "Equals"),
             ("contains", "Contains"),
-        ]
-        )
-    
+        ],
+    )
+
     o = filters.OrderingFilter(
         fields=(
-            ('name', 'name'),
-            ('category__name', 'name'),
-            ('price', 'price'),
+            ("name", "name"),
+            ("category__name", "name"),
+            ("price", "price"),
         ),
-
         field_labels={
-            'category__name': 'Category Name',
-        })
-    
+            "category__name": "Category Name",
+        },
+    )
 
     class Meta:
         model = Product

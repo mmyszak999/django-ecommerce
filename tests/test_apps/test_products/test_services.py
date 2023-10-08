@@ -7,8 +7,14 @@ from src.apps.products.models import (
     ProductInventory,
     ProductCategory,
 )
-from src.apps.products.services.product_category_service import ProductCategoryCreateService, ProductCategoryUpdateService
-from src.apps.products.services.product_service import ProductCreateService, ProductUpdateService
+from src.apps.products.services.product_category_service import (
+    ProductCategoryCreateService,
+    ProductCategoryUpdateService,
+)
+from src.apps.products.services.product_service import (
+    ProductCreateService,
+    ProductUpdateService,
+)
 from src.apps.products.utils import generate_image_file
 
 User = get_user_model()
@@ -19,10 +25,10 @@ class TestCategoryService(TestCase):
     def setUpTestData(cls):
         cls.create_service = ProductCategoryCreateService()
         cls.update_service = ProductCategoryUpdateService()
-        
+
         cls.category_data = {"name": "drinks"}
         cls.update_category_data = {"name": "updated"}
-        
+
     def test_category_service_correctly_creates_category(self):
         category = self.create_service.create_category(request_data=self.category_data)
         category_id = category.id
@@ -32,11 +38,12 @@ class TestCategoryService(TestCase):
 
     def test_category_service_correctly_updates_category(self):
         category = self.create_service.create_category(self.category_data)
-        self.update_service.update_category(request_data=self.update_category_data, instance=category)
+        self.update_service.update_category(
+            request_data=self.update_category_data, instance=category
+        )
         category_id = category.id
 
         self.assertEqual(ProductCategory.objects.all().count(), 1)
-
 
 
 class TestProductService(TestCase):
@@ -44,9 +51,9 @@ class TestProductService(TestCase):
     def setUpTestData(cls):
         cls.create_service = ProductCreateService()
         cls.update_service = ProductUpdateService()
-        
-        cls.category = ProductCategory.objects.create(name='fastfood')
-        
+
+        cls.category = ProductCategory.objects.create(name="fastfood")
+
         image_file = generate_image_file()
         cls.image = ContentFile(image_file.getvalue(), name=image_file.name)
         cls.product_data = {
@@ -57,13 +64,13 @@ class TestProductService(TestCase):
             "category_id": cls.category.id,
             "inventory": {
                 "quantity": 20,
-            } 
+            },
         }
         cls.updated_product_data = {
             "price": 22.00,
             "inventory": {
                 "quantity": 40,
-            } 
+            },
         }
 
     def test_product_service_correctly_creates_product(self):
@@ -75,7 +82,6 @@ class TestProductService(TestCase):
         self.assertEqual(ProductInventory.objects.all().count(), 1)
 
         self.assertEqual(Product.objects.get(id=product_id), product)
-
 
     def test_product_service_correctly_updates_product(self):
         inventory_data = self.updated_product_data["inventory"]
@@ -91,7 +97,5 @@ class TestProductService(TestCase):
         )
         self.assertEqual(
             Product.objects.get(id=updated_product.id).price,
-            self.updated_product_data['price'],
+            self.updated_product_data["price"],
         )
-
-

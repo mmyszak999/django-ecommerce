@@ -5,7 +5,6 @@ from django_countries.fields import CountryField
 from phonenumber_field.modelfields import PhoneNumberField
 
 
-
 @dataclass(frozen=True)
 class UserAddressEntity:
     primary_address: str

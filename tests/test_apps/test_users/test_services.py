@@ -18,8 +18,8 @@ class TestUserProfileCreateService(TestCase):
                 "email": "test_user1@mail.com",
                 "first_name": "Name1",
                 "last_name": "Name2",
-                "role": "customer", 
-                "phone_number": "+48123123123"
+                "role": "customer",
+                "phone_number": "+48123123123",
             },
             "passwords": {
                 "password": "password123",
@@ -29,7 +29,7 @@ class TestUserProfileCreateService(TestCase):
                 "primary_address": "Kowalskiego 12",
                 "country": "PL",
                 "city": "Warsaw",
-                "zip_code": "69-420"
+                "zip_code": "69-420",
             },
         }
 
@@ -37,14 +37,11 @@ class TestUserProfileCreateService(TestCase):
             "user": {
                 "phone_number": "+48666777444",
             },
-            "address": {
-
-            },
+            "address": {},
         }
-        
+
         cls.update_user_address_data = {
-            "user": {
-            },
+            "user": {},
             "address": {
                 "country": "AZ",
                 "city": "Kabul",
@@ -58,7 +55,9 @@ class TestUserProfileCreateService(TestCase):
         self.assertEqual(User.objects.all().count(), 1)
         self.assertEqual(UserAddress.objects.all().count(), 1)
 
-        self.assertEqual(UserProfile.objects.get(id=created_user.id).id, created_user.id)
+        self.assertEqual(
+            UserProfile.objects.get(id=created_user.id).id, created_user.id
+        )
 
     def test_user_update_service_correctly_updates_user(self):
         user_profile = self.create_service.register_user(self.user_profile_data)
@@ -70,7 +69,10 @@ class TestUserProfileCreateService(TestCase):
         self.assertEqual(User.objects.all().count(), 1)
 
         self.assertEqual(UserProfile.objects.get(id=user_profile.id), user_profile)
-        self.assertEqual(UserProfile.objects.get(id=user_profile.id).phone_number, user_profile.phone_number)
+        self.assertEqual(
+            UserProfile.objects.get(id=user_profile.id).phone_number,
+            user_profile.phone_number,
+        )
 
     def test_user_update_service_correctly_updates_user_address(self):
         user_profile = self.create_service.register_user(self.user_profile_data)
@@ -82,6 +84,4 @@ class TestUserProfileCreateService(TestCase):
         self.assertEqual(UserAddress.objects.all().count(), 1)
 
         self.assertEqual(UserProfile.objects.get(id=account_id), user_profile)
-        self.assertEqual(
-            UserAddress.objects.first(), user_profile.address.first()
-        )
+        self.assertEqual(UserAddress.objects.first(), user_profile.address.first())

@@ -50,7 +50,7 @@ class Product(models.Model):
     )
     product_image = models.ImageField(blank=True, null=True)
     product_thumbnail = models.ImageField(blank=True, null=True)
-    
+
     def save(self, *args, **kwargs):
         make_thumbnail(self)
 

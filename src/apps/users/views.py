@@ -4,11 +4,7 @@ from rest_framework import permissions, status
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.request import Request
 from rest_framework.response import Response
-from rest_framework.mixins import (
-    ListModelMixin,
-    RetrieveModelMixin,
-    CreateModelMixin
-)
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, CreateModelMixin
 
 from src.apps.users.models import UserAddress, UserProfile
 from src.apps.users.serializers import (
@@ -16,7 +12,7 @@ from src.apps.users.serializers import (
     RegistrationOutputSerializer,
     UserOutputSerializer,
     UpdateUserSerializer,
-    UserDetailOutputSerializer
+    UserDetailOutputSerializer,
 )
 from src.apps.users.services import UserProfileCreateService, UserUpdateService
 
@@ -32,15 +28,14 @@ class UserRegisterAPIView(GenericViewSet, CreateModelMixin):
 
         user_profile = service.register_user(request_data=serializer.validated_data)
         return Response(
-            self.get_serializer(user_profile).data,
-            status=status.HTTP_201_CREATED
+            self.get_serializer(user_profile).data, status=status.HTTP_201_CREATED
         )
 
 
 class UserProfileListAPIView(GenericViewSet, ListModelMixin):
     queryset = UserProfile.objects.all()
     serializer_class = UserOutputSerializer
-    
+
     def get_queryset(self):
         qs = self.queryset
         user = self.request.user
@@ -52,7 +47,7 @@ class UserProfileListAPIView(GenericViewSet, ListModelMixin):
 class UserProfileDetailAPIView(GenericViewSet, RetrieveModelMixin):
     queryset = UserProfile.objects.all()
     serializer_class = UserDetailOutputSerializer
-    
+
     def get_queryset(self):
         qs = self.queryset
         user = self.request.user
@@ -71,4 +66,3 @@ class UserProfileDetailAPIView(GenericViewSet, RetrieveModelMixin):
         return Response(
             self.get_serializer(updated_userprofile).data, status=status.HTTP_200_OK
         )
-    

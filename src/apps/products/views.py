@@ -19,10 +19,16 @@ from src.apps.products.serializers import (
     ProductOutputSerializer,
     ProductDetailOutputSerializer,
     ProductUpdateInputSerializer,
-    ProductUpdateDataInputSerializer
+    ProductUpdateDataInputSerializer,
 )
-from src.apps.products.services.product_category_service import ProductCategoryCreateService, ProductCategoryUpdateService
-from src.apps.products.services.product_service import ProductCreateService, ProductUpdateService
+from src.apps.products.services.product_category_service import (
+    ProductCategoryCreateService,
+    ProductCategoryUpdateService,
+)
+from src.apps.products.services.product_service import (
+    ProductCreateService,
+    ProductUpdateService,
+)
 from src.apps.products.filters import ProductFilter
 from src.core.permissions import StaffOrReadOnly, SellerOrAdmin
 
@@ -31,19 +37,20 @@ class ProductCategoryListCreateAPIView(GenericViewSet, ListModelMixin):
     queryset = ProductCategory.objects.all()
     serializer_class = ProductCategoryOutputSerializer
     permission_classes = [StaffOrReadOnly]
-    
+
     def create(self, request: Request) -> Response:
         service = ProductCategoryCreateService()
         serializer = ProductCategoryInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         category = service.create_category(request_data=serializer.validated_data)
         return Response(
-            self.get_serializer(category).data,
-            status=status.HTTP_201_CREATED
+            self.get_serializer(category).data, status=status.HTTP_201_CREATED
         )
 
 
-class ProductCategoryDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyModelMixin):
+class ProductCategoryDetailAPIView(
+    GenericViewSet, RetrieveModelMixin, DestroyModelMixin
+):
     queryset = ProductCategory.objects.all()
     serializer_class = ProductCategoryOutputSerializer
     permission_classes = [StaffOrReadOnly]
@@ -59,7 +66,7 @@ class ProductCategoryDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyMo
         return Response(
             self.get_serializer(updated_category).data, status=status.HTTP_200_OK
         )
-    
+
     def delete(self, request: Request, pk: UUID) -> Response:
         self.destroy(request, pk)
         return Response(status=status.HTTP_204_NO_CONTENT)
@@ -71,15 +78,14 @@ class ProductListCreateAPIView(GenericViewSet, ListModelMixin):
     filter_backends = [filters.DjangoFilterBackend]
     filterset_class = ProductFilter
     permission_classes = [SellerOrAdmin]
-    
+
     def create(self, request: Request) -> Response:
         service = ProductCreateService()
         serializer = ProductInputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         product = service.product_create(request_data=serializer.validated_data)
         return Response(
-            self.get_serializer(product).data,
-            status=status.HTTP_201_CREATED
+            self.get_serializer(product).data, status=status.HTTP_201_CREATED
         )
 
 
@@ -99,8 +105,7 @@ class ProductDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyModelMixin
         return Response(
             self.get_serializer(updated_product).data, status=status.HTTP_200_OK
         )
-    
+
     def delete(self, request: Request, pk: UUID) -> Response:
         self.destroy(request, pk)
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
