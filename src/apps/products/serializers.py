@@ -29,7 +29,7 @@ class ProductInputSerializer(serializers.Serializer):
     name = serializers.CharField()
     price = serializers.FloatField(default=0, allow_null=True)
     description = serializers.CharField(required=False, allow_null=True)
-    product_image = serializers.ImageField()
+    product_image = serializers.ImageField(required=False)
     category_id = serializers.UUIDField()
     inventory = ProductInventoryInputSerializer(many=False, required=True)
     
@@ -38,7 +38,7 @@ class ProductDataInputSerializer(serializers.Serializer):
     name = serializers.CharField()
     price = serializers.FloatField(default=0, allow_null=True)
     description = serializers.CharField(required=False, allow_null=True)
-    product_image = serializers.ImageField()
+    product_image = serializers.ImageField(required=False)
 
 
 class ProductUpdateDataInputSerializer(serializers.Serializer):

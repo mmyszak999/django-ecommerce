@@ -7,6 +7,7 @@ from src.apps.products.serializers import ProductCategoryInputSerializer, Produc
 from src.apps.products.entities.product_category_entities import (
     ProductCategoryEntity, ProductCategoryUpdateEntity
 )
+from src.core.exceptions import ValueNotUniqueException
 
 
 class ProductCategoryCreateService:

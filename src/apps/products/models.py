@@ -48,8 +48,8 @@ class Product(models.Model):
     inventory = models.OneToOneField(
         ProductInventory, on_delete=models.CASCADE, related_name="product"
     )
-    product_image = models.ImageField()
-    product_thumbnail = models.ImageField()
+    product_image = models.ImageField(blank=True, null=True)
+    product_thumbnail = models.ImageField(blank=True, null=True)
     
     def save(self, *args, **kwargs):
         make_thumbnail(self)

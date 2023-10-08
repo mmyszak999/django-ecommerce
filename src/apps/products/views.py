@@ -46,7 +46,7 @@ class ProductCategoryListCreateAPIView(GenericViewSet, ListModelMixin):
 class ProductCategoryDetailAPIView(GenericViewSet, RetrieveModelMixin, DestroyModelMixin):
     queryset = ProductCategory.objects.all()
     serializer_class = ProductCategoryOutputSerializer
-    permission_classes = [SellerOrAdmin]
+    permission_classes = [StaffOrReadOnly]
 
     def update(self, request: Request, pk: UUID) -> Response:
         service = ProductCategoryUpdateService()
