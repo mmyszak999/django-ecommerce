@@ -25,7 +25,7 @@ Moreover you need to have docker installed in order to run the project container
 
 1. Clone repository:
 `$ git clone https://github.com/mmyszak999/django-ecommerce`
-2. In the 'src/config' directory create '.env' file
+2. In the root directory create 'config' directory and inside of it create '.env' file
 3. In '.env' set the values of environment variables (you can copy the content from '.env.template' file)
 4. To build the project, in the root directory type:
 `$ make build`
